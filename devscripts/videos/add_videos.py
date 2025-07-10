@@ -1,5 +1,5 @@
 """
-Add multiple YouTube videos from a JSON file.
+Add multiple YouTube videos from a JSON file in a single atomic transaction.
 
 Expected JSON file format:
 [
@@ -18,6 +18,7 @@ Expected JSON file format:
 
 Usage:
     python add_video.py path/to/videos.json
+    python add_video.py path/to/videos.json --dry-run
 """
 
 import sys
@@ -25,10 +26,8 @@ import json
 from datetime import datetime
 from dbhelper import get_db_connection
 
-def add_videos_from_list(video_list):
-    conn = get_db_connection()
-    cur = conn.cursor()
-
+def validate_video_list(video_list):
+    parsed = []
     for idx, data in enumerate(video_list, start=1):
         name = data.get("name")
         date_str = data.get("date")
@@ -36,35 +35,52 @@ def add_videos_from_list(video_list):
         location = data.get("location", None)
 
         if not (name and date_str and link):
-            print(f"Skipping video #{idx}: missing required fields 'name', 'date', or 'link'")
-            continue
+            raise ValueError(f"[{idx}] Missing required fields: 'name', 'date', or 'link'.")
 
         try:
             date = datetime.fromisoformat(date_str)
         except ValueError:
-            print(f"Skipping video #{idx}: invalid date format '{date_str}'")
-            continue
+            raise ValueError(f"[{idx}] Invalid date format: '{date_str}'")
 
-        try:
+        parsed.append({
+            "idx": idx,
+            "name": name,
+            "date": date,
+            "link": link,
+            "location": location
+        })
+
+    return parsed
+
+def insert_videos(parsed_videos, dry_run=False):
+    if dry_run:
+        print("DRY RUN: The following videos would be inserted:")
+        for v in parsed_videos:
+            print(f"  - [{v['idx']}] {v['name']} ({v['link']})")
+        return
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        for v in parsed_videos:
             cur.execute("""
                 INSERT INTO "YoutubeVideo" (name, date, link, location)
                 VALUES (%s, %s, %s, %s)
-            """, (name, date, link, location))
-            print(f"Added video #{idx}: {name}")
-        except Exception as e:
-            print(f"Error adding video #{idx} '{name}': {e}")
+            """, (v["name"], v["date"], v["link"], v["location"]))
 
-    conn.commit()
-    cur.close()
-    conn.close()
-    print("Done processing videos.")
+        conn.commit()
+        print(f"\nSuccessfully inserted {len(parsed_videos)} video(s).")
+    except Exception as e:
+        conn.rollback()
+        print(f"\nError during insertion. Transaction rolled back.")
+        print(f"   Reason: {e}")
+    finally:
+        cur.close()
+        conn.close()
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python add_video.py path/to/videos.json")
-        sys.exit(1)
-
     json_path = sys.argv[1]
+    dry_run = "--dry-run" in sys.argv
 
     try:
         with open(json_path, "r", encoding="utf-8") as f:
@@ -75,4 +91,10 @@ if __name__ == "__main__":
         print(f"Failed to read or parse JSON file: {e}")
         sys.exit(1)
 
-    add_videos_from_list(videos)
+    try:
+        parsed_videos = validate_video_list(videos)
+    except Exception as e:
+        print(f"Validation error: {e}")
+        sys.exit(1)
+
+    insert_videos(parsed_videos, dry_run=dry_run)
