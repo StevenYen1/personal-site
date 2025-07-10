@@ -1,0 +1,156 @@
+/* ------------------------------
+   Container & Title Styles
+--------------------------------- */
+.container > h2 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: white;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+}
+
+.container {
+  width: 90%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  height: 100vh;              /* Fill viewport height */
+  display: flex;              /* Column layout */
+  flex-direction: column;
+  box-sizing: border-box;     /* Ensure padding doesn't overflow */
+}
+
+/* ------------------------------
+   Timeline Container & Marker
+--------------------------------- */
+.timeline-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-left: 80px;
+  position: relative;
+
+    /* Hide scrollbar (Chrome, Edge, Safari) */
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* IE/Edge */
+}
+
+.timeline-container::-webkit-scrollbar {
+  display: none;               /* Chrome, Safari */
+}
+
+.timeline-marker {
+  margin-bottom: 1rem;
+}
+
+.timeline-marker .year-label {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin-left: -40px;
+  margin-bottom: 1rem;
+  color: white;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+}
+
+/*
+There is some weird scrollable height vs viewport height shenanigans going on here and I'm not sure why the helly we can't just extend scrollable height to the bottom.
+Instead we put the line on the scrollable height rather than viewport height.
+
+The container is the scroll viewport, fixed height, with scrollbar.
+The content inside is taller (scrollable height).
+Your timeline vertical line should be on the content div so it stretches the entire scrollable height, not just the visible viewport.
+*/
+.timeline-content {
+  position: relative;
+  padding-left: 40px;
+}
+
+.timeline-content::before {
+  content: '';
+  position: absolute;
+  left: -20px;    /* same left offset as original */
+  top: 0;
+  height: 100%;
+  width: 5px;
+  background-color: #ccc;
+  z-index: 0;
+}
+
+/* ------------------------------
+   Year Group & Videos List
+--------------------------------- */
+.timeline-year-group {
+  margin-bottom: 3rem;
+}
+
+.year-videos {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 0.5rem;
+}
+
+/* ------------------------------
+   Video Card Styles
+--------------------------------- */
+.video-card {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  border: 1px solid #444;
+  border-radius: 16px;
+  padding: 1.5rem;
+  background-color: #2e2e2e;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+}
+
+.video-card:hover {
+  background-color: #444;
+  animation: bounce 0.3s ease forwards;
+}
+
+@keyframes bounce {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+/* ------------------------------
+   Thumbnail Styles
+--------------------------------- */
+.thumbnail-box {
+  aspect-ratio: 4 / 3;
+  width: 200px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: #eee;
+}
+
+.thumbnail-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.35);
+  border-radius: 12px;
+  display: block;
+}
+
+/* ------------------------------
+   Video Info Text
+--------------------------------- */
+.video-info h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  color: #61dafb;
+}
+
+.video-info p {
+  margin: 0.25rem 0;
+  font-size: 1.1rem;
+  color: #ccc;
+}

@@ -1,7 +1,7 @@
 import './styles/App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Home';
-import YoutubeVideos from './components/YoutubeVideos';
+import YoutubeVideos from './components/videos/YoutubeVideos';
 import Blog from './components/Blog';
 import Games from './components/Games';
 
