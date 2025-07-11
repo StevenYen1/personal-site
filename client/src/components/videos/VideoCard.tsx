@@ -8,25 +8,29 @@ const getYouTubeThumbnail = (url: string): string | null => {
 
 interface Props {
   video: YoutubeVideo;
+  isSelected: boolean;
+  onClick: () => void;
 }
 
-const VideoCard: React.FC<Props> = ({ video }) => {
+const VideoCard: React.FC<Props> = ({ video, isSelected, onClick }) => {
   const thumbnailUrl = getYouTubeThumbnail(video.link);
 
   return (
-    <div className="video-card">
-      <div className="thumbnail-box">
-        {thumbnailUrl && (
-          <img src={thumbnailUrl} alt={`${video.name} thumbnail`} />
-        )}
-      </div>
-      <div className="video-info">
-        <a href={video.link} target="_blank" rel="noopener noreferrer">
-          <h3>{video.name}</h3>
-        </a>
-        {video.date && <p>📅 {new Date(video.date).toDateString()}</p>}
-        {video.location && <p>📍 {video.location}</p>}
-      </div>
+    <div className={`video-card ${isSelected ? 'selected' : ''}`}
+      onClick={onClick}
+    >
+        <div className="thumbnail-box">
+            {thumbnailUrl && (
+            <img src={thumbnailUrl} alt={`${video.name} thumbnail`} />
+            )}
+        </div>
+        <div className="video-info">
+            <a href={video.link} target="_blank" rel="noopener noreferrer">
+            <h3>{video.name}</h3>
+            </a>
+            {video.date && <p>📅 {new Date(video.date).toDateString()}</p>}
+            {video.location && <p>📍 {video.location}</p>}
+        </div>
     </div>
   );
 };

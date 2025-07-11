@@ -15,6 +15,7 @@ const groupVideosByYear = (videos: YoutubeVideo[]) => {
 
 const YoutubeVideos: React.FC = () => {
   const [videos, setVideos] = useState<YoutubeVideo[]>([]);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
   const API_HOST = import.meta.env.VITE_API_HOST;
   const API_PORT = import.meta.env.VITE_API_PORT;
@@ -26,6 +27,10 @@ const YoutubeVideos: React.FC = () => {
       .catch((err) => console.error('Error fetching videos:', err));
   }, []);
 
+  const toggleCard = (id: string) => {
+    setSelectedCardId(prev => (prev === id ? null : id));
+  };
+
   const videosByYear = groupVideosByYear(videos);
   const sortedYears = Object.keys(videosByYear).sort((a, b) => Number(b) - Number(a));
 
@@ -35,12 +40,18 @@ const YoutubeVideos: React.FC = () => {
       <div className="timeline-container">
         <div className="timeline-content">
           {sortedYears.map((year) => (
-            <YearSection key={year} year={year} videos={videosByYear[year]} />
+            <YearSection
+              key={year}
+              year={year}
+              videos={videosByYear[year]}
+              selectedCardId={selectedCardId}
+              onCardClick={toggleCard}
+            />
           ))}
 
           <div className="timeline-year-group">
             <div className="timeline-marker">
-              <div className="year-label">le beginning....</div>
+              <div className="year-label">Le beginning....</div>
             </div>
           </div>
         </div>

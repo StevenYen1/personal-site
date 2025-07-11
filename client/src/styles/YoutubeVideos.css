@@ -28,6 +28,7 @@
   flex: 1;
   overflow-y: auto;
   padding-left: 80px;
+  padding-right: 2rem;
   position: relative;
 
     /* Hide scrollbar (Chrome, Edge, Safari) */
@@ -111,6 +112,13 @@ Your timeline vertical line should be on the content div so it stretches the ent
   background-color: #444;
   animation: bounce 0.3s ease forwards;
 }
+
+.video-card.selected {
+  background-color: #555;
+  box-shadow: 0 0 0 3px #61dafb;
+  transform: scale(1.01);
+}
+
 
 @keyframes bounce {
   0%   { transform: translateY(0); }
