@@ -1,4 +1,3 @@
-import React from 'react';
 import type { YoutubeVideo } from '../../types/YoutubeVideo';
 import VideoCard from './VideoCard';
 
@@ -7,9 +6,18 @@ interface Props {
   videos: YoutubeVideo[];
   selectedCardId: string | null;
   onCardClick: (id: string) => void;
+  onCoordsUpdate: (coords: { lat: number; lng: number } | null) => void;
+  onLocationUpdate: (locationName: string | null) => void;
 }
 
-const YearSection: React.FC<Props> = ({ year, videos, selectedCardId, onCardClick }) => (
+const YearSection: React.FC<Props> = ({
+  year,
+  videos,
+  selectedCardId,
+  onCardClick,
+  onCoordsUpdate,
+  onLocationUpdate,
+}) => (
   <div className="timeline-year-group">
     <div className="timeline-marker">
       <div className="year-label">{year}</div>
@@ -21,6 +29,8 @@ const YearSection: React.FC<Props> = ({ year, videos, selectedCardId, onCardClic
           video={video}
           isSelected={selectedCardId === String(video.id)}
           onClick={() => onCardClick(String(video.id))}
+          onCoordsUpdate={onCoordsUpdate}
+          onLocationUpdate={onLocationUpdate}
         />
       ))}
     </div>
